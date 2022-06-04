@@ -40,7 +40,7 @@ contract Domains is ERC721URIStorage {
   mapping(string => string) public records;
 
    // Inherit from ERC721 contract for NFT: collection name ⬇⬇ & NFT symbol ⬇⬇
-  constructor(string memory _tld) payable ERC721("TLC Name Service", "TNS") {
+  constructor(string memory _tld) payable ERC721("WEB3 Name Service", "W3NS") {
     tld = _tld;
     console.log("%s name service deployed", _tld);
   }
@@ -91,7 +91,7 @@ contract Domains is ERC721URIStorage {
       abi.encodePacked(
         '{"name": "',
         _name,
-        '", "description": "A domain on the TLC name service", "image": "data:image/svg+xml;base64,',
+        '", "description": "A domain on the WEB3 name service", "image": "data:image/svg+xml;base64,',
         Base64.encode(bytes(finalSvg)),
         '","length":"',
         strLen,

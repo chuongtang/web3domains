@@ -1,4 +1,9 @@
 require("@nomiclabs/hardhat-waffle");
+require('dotenv').config();
+
+const alchemyUrl = process.env.ALCHEMY_KEY;
+const prvKey = process.env.WL_PRV_KEY;
+
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -16,6 +21,12 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-module.exports = {
+ module.exports = {
   solidity: "0.8.10",
+  networks: {
+    mumbai: {
+      url: alchemyUrl,
+      accounts: [prvKey],
+    }
+  }
 };

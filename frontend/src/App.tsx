@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import logo from './logo.svg'
+import BGimg from '../assets/WEB3NSpix.png'
 import './App.css'
 import {
-  Text, Alert, AlertIcon, Heading, Button
+  Text, Alert, AlertIcon, Heading, Button, HStack, VStack, Container, Image
 } from '@chakra-ui/react'
 import { ethers } from "ethers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
@@ -16,46 +17,32 @@ declare global {
 }
 
 const App: React.FC = () => {
-  const [currentAccount, setCurrentAccount] = useState('');
-  const [message, setMessage] = useState('')
-
-  const checkIfWalletIsConnected = async () => {
-    // First make sure we have access to window.ethereum
-    const { ethereum } = window;
-
-    if (!ethereum) {
-      console.log("Make sure you have MetaMask!");
-      setMessage('Make sure you have MetaMask Installed!')
-      return;
-    } else {
-      console.log("We have the ethereum object", ethereum);
-    }
-
-    // Check if we're authorized to access the user's wallet
-    let accounts : (string | number)[] =  await ethereum.request({ method: 'eth_accounts' });
-
-    // Users can have multiple authorized accounts, we grab the first one if its there!
-    if (accounts.length !== 0) {
-      let account = accounts[0];
-      console.log('Found an authorized account:', account);
-      setCurrentAccount(account);
-    } else {
-      console.log('No authorized account found');
-    }
-  };
+  const [isMetamaskInstalled, setIsMetamaskInstalled] = useState<boolean>(false);
+  const [currentAccount, setCurrentAccount] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>('');
 
 
   useEffect(() => {
-    checkIfWalletIsConnected();
-  }, [])
+    //check if Metamask wallet is installed
+    ((window as any).ethereum)
+      ? setIsMetamaskInstalled(true)
+      : setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
+  }, []);
 
-  // Connect wallet to app
-  const renderNotConnectedContainer = () => (
-    <div className="connect-wallet-container">
-      <img src="https://media.giphy.com/media/3ohhwytHcusSCXXOUg/giphy.gif" alt="Ninja gif" />
-      <Button colorScheme='orange'>Connect your wallet</Button>
-    </div>
-  );
+  //Does the User have an Ethereum wallet/account?
+  const connectWallet = async (): Promise<void> => {
+    console.log("Fired")
+    try {
+      const accounts = await (window as any).ethereum.request(
+        { method: "eth_requestAccounts" }
+      );
+      console.log('\x1b[31m%s\x1b[0m', "Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error: any) {
+      alert(`Something went wrong: ${error}`);
+      setMessage('No authorized account found');
+    }
+  };
 
   return (
     <div className="App">
@@ -65,13 +52,26 @@ const App: React.FC = () => {
           {message}
         </Alert>}
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Heading as='h1' size='4xl'>Name Service</Heading>
-        <Text m={3} borderRadius={'lg'} p={4} color='gray.500' bgGradient='linear(to-r, gray.300, yellow.400, pink.200)' noOfLines={1}>
+        <HStack>
+          <img src={logo} className="App-logo" alt="logo" />
+          <Heading as='h1' size='lg'>Name Service</Heading>
+        </HStack>
+        <Text m={1} borderRadius={'lg'} p={4} color='gray.500' noOfLines={1}>
           Register a domain on Polygon blockchain
         </Text>
-
       </header>
+      <VStack m={12}>
+        <Container maxW='300px' m={8} >
+          <Image src={BGimg} alt="main page image" />
+        </Container>
+        {!currentAccount &&
+          <Button colorScheme='teal' size='lg' onClick={connectWallet}>
+            Connect your wallet
+          </Button>}
+        {currentAccount && <Text color='teal.500' noOfLines={2} fontSize='xl'>
+          App connected to:<strong> {currentAccount}</strong>
+        </Text>}
+      </VStack>
     </div>
   )
 }

@@ -37,3 +37,13 @@
 button {
   font-size: calc(10px + 2vmin);
 }
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 1rem;
+  width: 100%;
+  color: white;
+  align-items: center;
+  justify-content: center;
+}

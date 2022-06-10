@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import {
-  VStack, Button, Input, InputGroup, InputRightElement, Tooltip, Progress, CircularProgress, CircularProgressLabel
+  VStack, Button, Input, InputGroup, InputRightElement, Tooltip, CircularProgress, CircularProgressLabel
 } from '@chakra-ui/react'
 import { ethers } from "ethers";
+import web3Domain from './utils/web3Domain.json'
 
 
 const DomainInput: React.FC = () => {
@@ -15,16 +16,16 @@ const DomainInput: React.FC = () => {
 
   // Call 'register' function from smart contract
   const mintDomain = async (): Promise<void> => {
-    let price: number;
+    let price: string;
     switch (doLength) {
       case 3:
-        price = 0.5;
+        price = "0.5";
         break;
       case 4:
-        price = 0.3;
+        price = "0.3";
         break;
       default:
-        price = 0.1;
+        price = "0.1";
         break;
 
     }
@@ -36,7 +37,7 @@ const DomainInput: React.FC = () => {
       if (winEth) {
         const provider = new ethers.providers.Web3Provider(winEth);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, web3Domain.abi, signer);
 
         console.log("Going to pop wallet now to pay gas...")
         let tx = await contract.register(domain, { value: ethers.utils.parseEther(price) });

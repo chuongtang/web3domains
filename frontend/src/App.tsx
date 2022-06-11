@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import logo from './logo.svg'
 import DomainInput from './components/DomainInput'
-import Navbar from './components/Navbar'
 import BGimg from '../assets/WEB3NSpix.png'
 import BSpacelogo from '../assets/BuildSpaceLogo.png'
 

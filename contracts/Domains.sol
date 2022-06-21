@@ -39,7 +39,16 @@ contract Domains is ERC721URIStorage {
   // This new mapping values (These values can be anything - wallet addresses, secret encrypted messages, Spotify links, the IP address to our servers, whatever you want!)
   mapping(string => string) public records;
 
+  // variable 'names' used to get all the minted domains 
+  mapping (uint => string) public names;
+
 address payable public owner;
+
+//  Declare custom error from Solidity (save gas 💲 when deploying)
+//  👉 https://blog.soliditylang.org/2021/04/21/custom-errors/  ✨
+error Unauthorized();
+error AlreadyRegistered();
+error InvalidName(string name);
 
    // Inherit from ERC721 contract for NFT: collection name ⬇⬇ & NFT symbol ⬇⬇
   constructor(string memory _tld) payable ERC721("WEB3 Name Service", "W3NS") {
@@ -66,6 +75,10 @@ address payable public owner;
   // A register function that adds their names to our mapping
   function register(string calldata name) public payable {
       // 'calldata' - this ⬆  indicates the “location” of where the name argument should be stored. Since it costs real money to process data on the blockchain, Solidity lets you indicate where reference types should be stored. calldata is non-persistent and can’t be modified. We like this because it takes the least amount of gas!
+
+      // Revert with error code when condition is not met ⬇
+      if (domains[name] != address(0)) revert AlreadyRegistered();
+      if (!valid(name)) revert InvalidName(name);
 
       // Ensure name is unregistered. ⬇ address(0) in Solidity is sort of like the void 
     require(domains[name] == address(0));
@@ -113,9 +126,9 @@ address payable public owner;
 
     // Set the NFTs data -- in this case the JSON blob w/ our domain's info!
     _setTokenURI(newRecordId, finalTokenUri);
-
     domains[name] = msg.sender;
-
+  // ⬇ set the mapping data to get all minted names later
+    names[newRecordId] = name;    
     _tokenIds.increment();
   }
 
@@ -123,6 +136,10 @@ address payable public owner;
   // console.log("%s has registered a domain!", msg.sender);
   // }
 
+  // limit the domain name between 3-8 characters 
+  function valid(string calldata name) public pure returns(bool) {
+    return StringUtils.strlen(name) >= 3 && StringUtils.strlen(name) <= 8;
+  }
   // This will give us the domain owners' address
   function getAddress(string calldata name) public view returns (address) {
       return domains[name];
@@ -130,6 +147,9 @@ address payable public owner;
   function setRecord(string calldata name, string calldata record) public {
       // Check that the owner is the transaction sender
       require(domains[name] == msg.sender);
+      
+      // Revert with error code when condition is not met ⬇
+      if (msg.sender != domains[name]) revert Unauthorized();
       records[name] = record;
       console.log("%s recording!", record);
   }
@@ -154,4 +174,15 @@ address payable public owner;
     (bool success, ) = msg.sender.call{value: amount}("");
     require(success, "Failed to withdraw Matic");
   } 
+  // function ⬇ to get all minted names domain from the contract
+  function getAllNames() public view returns (string[] memory) {
+    console.log("Getting all names from contract");
+    string[] memory allNames = new string[](_tokenIds.current());
+    for (uint i = 0; i < _tokenIds.current(); i++) {
+      allNames[i] = names[i];
+      console.log("Name for token %d is %s", i, allNames[i]);
+    }
+
+    return allNames;
+}
 }

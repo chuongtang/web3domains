@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [message, setMessage] = useState<string>('');
 
   const tld: string = '.web3';
-  const CONTRACT_ADDRESS: string | null = 'YOUR_CONTRACT_ADDRESS_HERE';
+  const CONTRACT_ADDRESS: string | null = '0x0bebB1AA19Ae44231C45b13AEd8ccd1Afd897B21';
   const [domain, setDomain] = useState<string>('');
   const [record, setRecord] = useState<string>('');
 
@@ -53,7 +53,7 @@ const App: React.FC = () => {
   };
 
 
-  
+
 
   return (
     <div className="App">
@@ -84,20 +84,20 @@ const App: React.FC = () => {
         </Text>}
       </VStack>
       {currentAccount && <DomainInput />}
-     
-        <Flex className="footer">
-          <Link color='teal.500' href='https://buildspace.so/p/build-polygon-ens'>
-            <Text as='u' color='teal'>Happily developed with buildspace</Text>
-          </Link>
-          <Image
-            borderRadius='full'
-            boxSize='2rem'
-            src={BSpacelogo}
-            alt='Buildspace logo'
-            m={4}
-          />
-        </Flex>
-    
+
+      <Flex className="footer">
+        <Link color='teal.500' href='https://buildspace.so/p/build-polygon-ens'>
+          <Text as='u' color='teal'>Happily developed with buildspace</Text>
+        </Link>
+        <Image
+          borderRadius='full'
+          boxSize='2rem'
+          src={BSpacelogo}
+          alt='Buildspace logo'
+          m={4}
+        />
+      </Flex>
+
     </div>
   )
 }

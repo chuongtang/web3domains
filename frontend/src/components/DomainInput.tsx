@@ -18,19 +18,68 @@ const DomainInput: React.FC<Props> = ({ network }) => {
   const [error, setError] = useState<string>('');
   const [aMinting, setAMinting] = useState<boolean>(false);
   const [successMsg, setSuccessMsg] = useState<string>('');
-
+  const { ethereum } = (window as any);
   const doLength: number = domain.length;
+
+  const switchNetwork = async () => {
+    const addMumbaiNetwork = async () => {
+      try {
+        await ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: '0x13881',
+              chainName: 'Polygon Mumbai Testnet',
+              rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+              nativeCurrency: {
+                name: "Mumbai Matic",
+                symbol: "MATIC",
+                decimals: 18
+              },
+              blockExplorerUrls: ["https://mumbai.polygonscan.com/"]
+            },
+          ],
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    if (ethereum) {
+      try {
+        // Try to switch to the Mumbai testnet
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x13881' }], // Check networks.js for hexadecimal network ids
+        });
+      } catch (error: unknown) {
+        // This error code means that the chain we want has not been added to MetaMask
+        // In this case we ask the user to add it to their MetaMask.
+
+        if (error instanceof Error) {
+          console.log('EOROROROROR', error);
+          (error.code === 4902) ? addMumbaiNetwork() : alert('MetaMask is not installed. Please install it to use this app: https://metamask.io/download.html');
+        } else {
+          console.log('Unexpected error', error);
+        }
+      }
+    } else {
+      // If window.ethereum is not found then MetaMask is not installed
+      alert('MetaMask is not installed. Please install it to use this app: https://metamask.io/download.html');
+    }
+  }
 
   // If not on Polygon Mumbai Testnet, render "Please connect to Polygon Mumbai Testnet"
   if (network !== 'Polygon Mumbai Testnet') {
     return (
-      <Center>
-        <Alert status='warning' flexDirection='column' width='50%'
-          alignItems='center'>
+      <VStack>
+        <Alert status='warning' flexDirection='column' width='50%' borderRadius="xl"
+          alignItems='center'  mb={12}>
           <AlertIcon />
           Please connect to Polygon Mumbai Testnet
         </Alert>
-      </Center>
+        <Button colorScheme='teal' variant='outline' onClick={switchNetwork}>Click to switch</Button>
+      </VStack>
     );
   }
 
@@ -94,9 +143,14 @@ const DomainInput: React.FC<Props> = ({ network }) => {
     }
     catch (error) {
       console.log(error);
-      setError(error.message);
-      setAMinting(false);
-      setTimeout(() => setError(''), 5000)
+      if (error instanceof Error) {
+        setError(error.message);
+        setAMinting(false);
+        setTimeout(() => setError(''), 5000)
+      } else {
+        console.log('Unexpected error', error);
+      }
+
     }
   }
 

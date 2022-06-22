@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import logo from './logo.svg'
 import DomainInput from './components/DomainInput'
 // import BGimg from '../assets/WEB3NSpix.png'
@@ -35,15 +35,15 @@ const App: React.FC = () => {
   const { ethereum } = (window as any);
 
   useEffect(() => {
-    //check if Metamask wallet is installed
-    (ethereum)
-      ? setIsMetamaskInstalled(true)
-      : setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
-
+    // //check if Metamask wallet is installed
+    // (ethereum)
+    //   ? setIsMetamaskInstalled(true)
+    //   : setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
+    console.log("*****", currentAccount)
   }, []);
 
   //Does the User have an Ethereum wallet/account?
-  const connectWallet = async (): Promise<void> => {
+  const connectWallet = useMemo( async (): Promise<void> => {
     console.log("Fired")
     try {
       const accounts = await ethereum.request(
@@ -70,7 +70,7 @@ const App: React.FC = () => {
       alert(`Something went wrong: ${error}`);
       setMessage('No authorized account found');
     }
-  };
+  },[])
 
   return (
     <div className="App">
@@ -101,13 +101,17 @@ const App: React.FC = () => {
         <Container maxW='300px' m={8} >
           <Image src={WEB3NSpix} alt="main page image" />
         </Container>
-        {!currentAccount &&
-          <Button colorScheme='teal' size='lg' onClick={connectWallet}>
+        {!currentAccount && ethereum &&
+          <Button colorScheme='teal' size='lg' onClick={()=>connectWallet}>
             Connect your wallet
           </Button>}
-        {/* {currentAccount && <Text color='teal.500' noOfLines={2} fontSize='1rem'>
-          App connected to:<strong> {currentAccount}</strong>
-        </Text>} */}
+        {!ethereum &&
+          <Text fontSize='1.5rem' color='tomato'>
+            This app requires Metamask Wallet.{' '}
+            <Link color='teal.500' href='https://metamask.io/download.html' isExternal>
+              Please click here to install it
+            </Link>
+          </Text>}
       </VStack>
       {currentAccount && <DomainInput network={network} />}
 

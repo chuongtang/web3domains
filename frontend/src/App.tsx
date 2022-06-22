@@ -32,28 +32,44 @@ const App: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
   const [record, setRecord] = useState<string>('');
 
-  const { ethereum } = (window as any);
+
+  // const { ethereum } = (window as any);
+  // if (!ethereum) {
+  //   console.log('Make sure you have metamask!');
+  //   return;
+  // } else {
+  //   console.log('We have the ethereum object', ethereum);
+  // };
 
   useEffect(() => {
     // //check if Metamask wallet is installed
-    // (ethereum)
-    //   ? setIsMetamaskInstalled(true)
-    //   : setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
-    console.log("*****", currentAccount)
+    if (typeof (window as any).ethereum !== 'undefined') {
+      const { ethereum } = (window as any);
+      if (ethereum) {
+        setIsMetamaskInstalled(true);
+      } else {
+        setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
+        return
+      }
+    } else {
+      // setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`);
+      return
+    }
+
   }, []);
 
   //Does the User have an Ethereum wallet/account?
-  const connectWallet = useMemo( async (): Promise<void> => {
+  const connectWallet = useMemo(async (): Promise<void> => {
     console.log("Fired")
     try {
-      const accounts = await ethereum.request(
+      const accounts = await (window as any).ethereum.request(
         { method: "eth_requestAccounts" }
       );
       console.log('\x1b[31m%s\x1b[0m', "Connected to", accounts[0]);
       setCurrentAccount(accounts[0]);
 
       // ⬇ check the user's network chain ID
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
       console.log('chainID HERE', chainId);
       console.log('netwrosk HERE', networks);
       //@ts-ignore
@@ -65,12 +81,12 @@ const App: React.FC = () => {
         console.log(network)
       }
 
-      ethereum.on('chainChanged', handleChainChanged);
+      (window as any).ethereum.on('chainChanged', handleChainChanged);
     } catch (error: any) {
       alert(`Something went wrong: ${error}`);
       setMessage('No authorized account found');
     }
-  },[])
+  }, [])
 
   return (
     <div className="App">
@@ -101,11 +117,11 @@ const App: React.FC = () => {
         <Container maxW='300px' m={8} >
           <Image src={WEB3NSpix} alt="main page image" />
         </Container>
-        {!currentAccount && ethereum &&
-          <Button colorScheme='teal' size='lg' onClick={()=>connectWallet}>
+        {!currentAccount && (window as any).ethereum &&
+          <Button colorScheme='teal' size='lg' onClick={() => connectWallet}>
             Connect your wallet
           </Button>}
-        {!ethereum &&
+        {!(window as any).ethereum &&
           <Text fontSize='1.5rem' color='tomato'>
             This app requires Metamask Wallet.{' '}
             <Link color='teal.500' href='https://metamask.io/download.html' isExternal>

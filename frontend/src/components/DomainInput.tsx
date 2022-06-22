@@ -24,7 +24,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
   const switchNetwork = async () => {
     const addMumbaiNetwork = async () => {
       try {
-        await ethereum.request({
+        await (window as any).ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [
             {
@@ -48,7 +48,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
     if (ethereum) {
       try {
         // Try to switch to the Mumbai testnet
-        await ethereum.request({
+        await (window as any).ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x13881' }], // Check networks.js for hexadecimal network ids
         });

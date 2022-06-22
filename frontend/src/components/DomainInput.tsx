@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
 import {
-  VStack, Button, Input, InputGroup, InputRightElement, Tooltip, CircularProgress, CircularProgressLabel, Alert, AlertIcon, AlertTitle, AlertDescription,
+  VStack, Button, Input, InputGroup, InputRightElement, Tooltip, Center, CircularProgress, CircularProgressLabel, Alert, AlertIcon, AlertTitle, AlertDescription, Text
 } from '@chakra-ui/react'
 import { ethers } from "ethers";
 import web3Domain from './utils/web3Domain.json'
 
+type Props = {
+  network: string,
+};
 
-const DomainInput: React.FC = () => {
+const DomainInput: React.FC<Props> = ({ network }) => {
 
   const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
   const [domain, setDomain] = useState<string>('');
@@ -17,6 +20,19 @@ const DomainInput: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState<string>('');
 
   const doLength: number = domain.length;
+
+  // If not on Polygon Mumbai Testnet, render "Please connect to Polygon Mumbai Testnet"
+  if (network !== 'Polygon Mumbai Testnet') {
+    return (
+      <Center>
+        <Alert status='warning' flexDirection='column' width='50%'
+          alignItems='center'>
+          <AlertIcon />
+          Please connect to Polygon Mumbai Testnet
+        </Alert>
+      </Center>
+    );
+  }
 
   // Call 'register' function from smart contract
   const mintDomain = async (): Promise<void> => {
@@ -84,7 +100,7 @@ const DomainInput: React.FC = () => {
     }
   }
 
-  
+
 
   return (
     <VStack color='gray.800' p={8}>
@@ -105,7 +121,7 @@ const DomainInput: React.FC = () => {
         <Input
           variant='filled'
           value={domain}
-          placeholder='Enter new domain name (at least 3 characters long)'
+          placeholder='Enter 3 to 8 characters  domain name'
           onChange={e => {
             setDomain(e.target.value)
           }} />

@@ -86,7 +86,6 @@ const App: React.FC = () => {
           <Spacer />
 
           {/* Display a logo and wallet connection status*/}
-
           <Image alt="Network logo" boxSize='1rem'
             objectFit='cover' src={network?.includes("Polygon") ? polygonLogo : ethLogo} />
           {currentAccount ? <Text fontSize='sm'> Connected to: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </Text> : <Text fontSize='md'>Please connect your wallet</Text>}
@@ -110,7 +109,7 @@ const App: React.FC = () => {
           App connected to:<strong> {currentAccount}</strong>
         </Text>} */}
       </VStack>
-      {currentAccount && <DomainInput />}
+      {currentAccount && <DomainInput network={network} />}
 
       <Flex className="footer">
         <Link color='teal.500' href='https://buildspace.so/p/build-polygon-ens'>

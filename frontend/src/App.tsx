@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import logo from './logo.svg'
 import DomainInput from './components/DomainInput'
-import BGimg from '../assets/WEB3NSpix.png'
-import BSpacelogo from '../assets/BuildSpaceLogo.png'
+// import BGimg from '../assets/WEB3NSpix.png'
+// import BuildSpacelogo from '../assets/BuildSpaceLogo.png'
+import { networks } from './components/utils/networks';
+import { WEB3NSpix, BuildSpaceLogo, ethLogo, polygonLogo } from '../assets'
 
 import './App.css'
 import {
-  Text, Alert, AlertIcon, Heading, Button, HStack, VStack, Container, Image, Flex, Link
+  Text, Alert, AlertIcon, Heading, Button, HStack, VStack, Container, Image, Flex, Link, Spacer, Center
 } from '@chakra-ui/react'
 import { ethers } from "ethers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
@@ -23,16 +25,18 @@ const App: React.FC = () => {
   const [isMetamaskInstalled, setIsMetamaskInstalled] = useState<boolean>(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
+  const [network, setNetwork] = useState<string>('');
 
   const tld: string = '.web3';
   const CONTRACT_ADDRESS: string | null = '0x0bebB1AA19Ae44231C45b13AEd8ccd1Afd897B21';
   const [domain, setDomain] = useState<string>('');
   const [record, setRecord] = useState<string>('');
 
+  const { ethereum } = (window as any);
 
   useEffect(() => {
     //check if Metamask wallet is installed
-    ((window as any).ethereum)
+    (ethereum)
       ? setIsMetamaskInstalled(true)
       : setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
   }, []);
@@ -41,19 +45,28 @@ const App: React.FC = () => {
   const connectWallet = async (): Promise<void> => {
     console.log("Fired")
     try {
-      const accounts = await (window as any).ethereum.request(
+      const accounts = await ethereum.request(
         { method: "eth_requestAccounts" }
       );
       console.log('\x1b[31m%s\x1b[0m', "Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
+
+      // ⬇ check the user's network chain ID
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      //@ts-ignore
+      setNetwork(networks[chainId]);
+
+      // Reload the page when they change networks
+      const handleChainChanged = (_chainId: string) => {
+        window.location.reload();
+      }
+
+      ethereum.on('chainChanged', handleChainChanged);
     } catch (error: any) {
       alert(`Something went wrong: ${error}`);
       setMessage('No authorized account found');
     }
   };
-
-
-
 
   return (
     <div className="App">
@@ -63,17 +76,26 @@ const App: React.FC = () => {
           {message}
         </Alert>}
       <header className="App-header">
-        <HStack>
+        <HStack p={5} >
           <img src={logo} className="App-logo" alt="logo" />
           <Heading as='h1' size='lg'>Name Service</Heading>
+          <Spacer />
+          {/* Display a logo and wallet connection status*/}
+          <div className="right">
+            <Image alt="Network logo" boxSize='50px'
+              objectFit='cover' src={network?.includes("Polygon") ? polygonLogo : ethLogo} />
+            {currentAccount ? <Text fontSize='md'> Wallet: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </Text> : <Text fontSize='md'>Please connect your wallet</Text>}
+          </div>
         </HStack>
-        <Text m={1} borderRadius={'lg'} p={4} color='gray.500' noOfLines={1}>
-          Register a domain on Polygon blockchain
-        </Text>
+        <Center>
+          <Text m={1} borderRadius={'lg'} p={4} color='gray.500' noOfLines={1}>
+            Register a domain on Polygon blockchain
+          </Text>
+        </Center>
       </header>
       <VStack m={6}>
         <Container maxW='300px' m={8} >
-          <Image src={BGimg} alt="main page image" />
+          <Image src={WEB3NSpix} alt="main page image" />
         </Container>
         {!currentAccount &&
           <Button colorScheme='teal' size='lg' onClick={connectWallet}>
@@ -92,7 +114,7 @@ const App: React.FC = () => {
         <Image
           borderRadius='full'
           boxSize='2rem'
-          src={BSpacelogo}
+          src={BuildSpaceLogo}
           alt='Buildspace logo'
           m={4}
         />

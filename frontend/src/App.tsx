@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [isMetamaskInstalled, setIsMetamaskInstalled] = useState<boolean>(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
-  const [network, setNetwork] = useState<string>('');
+  const [network, setNetwork] = useState<string>('mangGi');
 
   const tld: string = '.web3';
   const CONTRACT_ADDRESS: string | null = '0x0bebB1AA19Ae44231C45b13AEd8ccd1Afd897B21';
@@ -39,6 +39,7 @@ const App: React.FC = () => {
     (ethereum)
       ? setIsMetamaskInstalled(true)
       : setMessage(`Please install metamask wallet \n 👉 https://metamask.io \n`)
+
   }, []);
 
   //Does the User have an Ethereum wallet/account?
@@ -48,17 +49,20 @@ const App: React.FC = () => {
       const accounts = await ethereum.request(
         { method: "eth_requestAccounts" }
       );
-      console.log('\x1b[31m%s\x1b[0m', "Connected", accounts[0]);
+      console.log('\x1b[31m%s\x1b[0m', "Connected to", accounts[0]);
       setCurrentAccount(accounts[0]);
 
       // ⬇ check the user's network chain ID
       const chainId = await ethereum.request({ method: 'eth_chainId' });
+      console.log('chainID HERE', chainId);
+      console.log('netwrosk HERE', networks);
       //@ts-ignore
       setNetwork(networks[chainId]);
 
       // Reload the page when they change networks
       const handleChainChanged = (_chainId: string) => {
         window.location.reload();
+        console.log(network)
       }
 
       ethereum.on('chainChanged', handleChainChanged);
@@ -80,12 +84,13 @@ const App: React.FC = () => {
           <img src={logo} className="App-logo" alt="logo" />
           <Heading as='h1' size='lg'>Name Service</Heading>
           <Spacer />
+
           {/* Display a logo and wallet connection status*/}
-          <div className="right">
-            <Image alt="Network logo" boxSize='50px'
-              objectFit='cover' src={network?.includes("Polygon") ? polygonLogo : ethLogo} />
-            {currentAccount ? <Text fontSize='md'> Wallet: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </Text> : <Text fontSize='md'>Please connect your wallet</Text>}
-          </div>
+
+          <Image alt="Network logo" boxSize='1rem'
+            objectFit='cover' src={network?.includes("Polygon") ? polygonLogo : ethLogo} />
+          {currentAccount ? <Text fontSize='sm'> Connected to: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </Text> : <Text fontSize='md'>Please connect your wallet</Text>}
+
         </HStack>
         <Center>
           <Text m={1} borderRadius={'lg'} p={4} color='gray.500' noOfLines={1}>
@@ -101,9 +106,9 @@ const App: React.FC = () => {
           <Button colorScheme='teal' size='lg' onClick={connectWallet}>
             Connect your wallet
           </Button>}
-        {currentAccount && <Text color='teal.500' noOfLines={2} fontSize='1rem'>
+        {/* {currentAccount && <Text color='teal.500' noOfLines={2} fontSize='1rem'>
           App connected to:<strong> {currentAccount}</strong>
-        </Text>}
+        </Text>} */}
       </VStack>
       {currentAccount && <DomainInput />}
 

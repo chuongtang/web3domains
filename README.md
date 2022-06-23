@@ -8,7 +8,8 @@ This app let user register a `.web3` domain ( such as `newday.web3`, `learning.w
 **Frontend:** 
   * <img src="https://chuongtang.github.io/sourceStore/logos/Vite.png" alt="VITE"
 	title="VITE logo" height="20" /> [VITE:](https://vitejs.dev) superfast frontend tool to render <img src="https://chuongtang.github.io/sourceStore/logos/React.png" alt="React"
-	title="React logo" height="20" /> React.
+	title="React logo" height="20" /> React.<img src="https://chuongtang.github.io/sourceStore/logos/Typescript.jpg" alt="Typescript"
+	title="Typescript logo" height="20" />
 
 **Blockchain wallet:** 
   * <img src="https://chuongtang.github.io/sourceStore/logos/Metamask.png" alt="Metamask Logo"

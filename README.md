@@ -1,4 +1,5 @@
-# Domain name service on Polygon
+# Domain name service on Polygon <img src="https://chuongtang.github.io/sourceStore/logos/Polygon.png" alt="Polygon"
+	title="Polygon logo" height="30" />
 Register your own custom domain on Polygon (such as ".cool",  ".tricky", ".something"...)<br/>
 This app let user register a `.web3` domain ( such as `newday.web3`, `learning.web3`, `easymoney.web3`...)
 <br/>Mine is `genesis.web3`. What is yours?

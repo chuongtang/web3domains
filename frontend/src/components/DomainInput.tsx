@@ -102,7 +102,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
 
     console.log("Minting domain", domain, "with price", price);
     setAMinting(true);
-    setAlertMsg(`Minting your ${domain}.web3 domain ...`);
+    setAlertMsg(`.web3 domain is being minted on the blockchain`);
     setTimeout(() =>
       setAlertMsg(''), 3000);
     try {
@@ -125,12 +125,15 @@ const DomainInput: React.FC<Props> = ({ network }) => {
           setAlertMsg('');
           setSuccessMsg(`Domain minted! https://mumbai.polygonscan.com/tx/${tx.hash}`)
 
+          setAlertMsg('Setting domain record on Polygon network');
           // Set the record for the domain
           tx = await contract.setRecord(domain, record);
+          setSuccessMsg('');
           await tx.wait();
 
           console.log("Record set! https://mumbai.polygonscan.com/tx/" + tx.hash);
-          setRecordString(`https://mumbai.polygonscan.com/tx/${tx.hash}`)
+          setRecordString(`https://mumbai.polygonscan.com/tx/${tx.hash}`);
+          setAlertMsg('');
           setRecord('');
           setDomain('');
           setAMinting(false);
@@ -175,7 +178,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         alertMsg && <Alert status='warning'>
           <AlertIcon />
           <AlertTitle color='teal'>{`${domain}.web3`}</AlertTitle>
-          <AlertDescription > domain minting in progress </AlertDescription>
+          <AlertDescription > {alertMsg} </AlertDescription>
         </Alert>
       }
       {

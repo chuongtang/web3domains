@@ -44,8 +44,6 @@ const App: React.FC = () => {
         console.log('\x1b[31m%s\x1b[0m', "Connected to", accounts[0]);
       setCurrentAccount(accounts[0]);
       }
-      
-
       // ⬇ check the user's network chain ID
       const chainId = await (window as any).ethereum?.request({ method: 'eth_chainId' });
       console.log('chainID HERE', chainId);

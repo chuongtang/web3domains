@@ -62,14 +62,19 @@ const App: React.FC = () => {
   const connectWallet = useMemo(async (): Promise<void> => {
     console.log("Fired")
     try {
-      const accounts = await (window as any).ethereum.request(
+      const accounts = await (window as any).ethereum?.request(
         { method: "eth_requestAccounts" }
       );
-      console.log('\x1b[31m%s\x1b[0m', "Connected to", accounts[0]);
+
+      // add ⬇ this guard for Firefox 
+      if (accounts){
+        console.log('\x1b[31m%s\x1b[0m', "Connected to", accounts[0]);
       setCurrentAccount(accounts[0]);
+      }
+      
 
       // ⬇ check the user's network chain ID
-      const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
+      const chainId = await (window as any).ethereum?.request({ method: 'eth_chainId' });
       console.log('chainID HERE', chainId);
       console.log('netwrosk HERE', networks);
       //@ts-ignore
@@ -81,12 +86,21 @@ const App: React.FC = () => {
         console.log(network)
       }
 
-      (window as any).ethereum.on('chainChanged', handleChainChanged);
+      (window as any).ethereum?.on('chainChanged', handleChainChanged);
     } catch (error: any) {
-      alert(`Something went wrong: ${error}`);
+      if (error.code === -32002) {
+        setMessage(`Please approve app connection in Metamask 👉`)
+      }else{
+        // alert(`Something went really wrong: ${error.message}`);
+      console.log(error)
       setMessage('No authorized account found');
+      }
+      if (error.code === 4001){
+        alert(`user rejected connection`)
+        window.location.reload();
+      }
     }
-  }, [])
+  }, [(window as any).ethereum])
 
   return (
     <div className="App">

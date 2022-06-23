@@ -58,7 +58,6 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         // In this case we ask the user to add it to their MetaMask.
 
         if (error instanceof Error) {
-          console.log('EOROROROROR', error);
           //@ts-ignore
           (error.code === 4902) ? addMumbaiNetwork() : alert('MetaMask is not installed. Please install it to use this app: https://metamask.io/download.html');
         } else {
@@ -115,7 +114,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         const contract = new ethers.Contract(CONTRACT_ADDRESS, web3Domain.abi, signer);
 
         console.log("Going to pop wallet now to pay gas...");
-        // setSuccessMsg(`Minting started, please approve gas in Metamask`)
+        setAlertMsg(`Minting started, please approve gas in Metamask`)
         let tx = await contract.register(domain, { value: ethers.utils.parseEther(price) });
         // Wait for the transaction to be mined
         const receipt = await tx.wait();
@@ -123,6 +122,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         // Check if the transaction was successfully completed
         if (receipt.status === 1) {
           console.log("Domain minted! https://mumbai.polygonscan.com/tx/" + tx.hash);
+          setAlertMsg('');
           setSuccessMsg(`Domain minted! https://mumbai.polygonscan.com/tx/${tx.hash}`)
 
           // Set the record for the domain
@@ -134,7 +134,6 @@ const DomainInput: React.FC<Props> = ({ network }) => {
           setRecord('');
           setDomain('');
           setAMinting(false);
-          setAlertMsg('');
           setSuccessMsg(`Record set at https://mumbai.polygonscan.com/tx/${tx.hash}`)
           setTimeout(() => setSuccessMsg(''), 5000)
         }

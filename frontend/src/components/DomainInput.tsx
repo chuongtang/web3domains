@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  VStack, Button, Input, InputGroup, InputRightElement, Tooltip, Center, CircularProgress, CircularProgressLabel, Alert, AlertIcon, AlertTitle, AlertDescription, Text
+  VStack, Button, Input, InputGroup, InputRightAddon, Center, Tooltip, Link, CircularProgress, CircularProgressLabel, Alert, AlertIcon, AlertTitle, AlertDescription, Text
 } from '@chakra-ui/react'
 import { ethers } from "ethers";
 import web3Domain from './utils/web3Domain.json'
@@ -14,6 +14,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
   const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
   const [domain, setDomain] = useState<string>('');
   const [record, setRecord] = useState<string>('');
+  const [recordString, setRecordString] = useState<string>('');
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [aMinting, setAMinting] = useState<boolean>(false);
@@ -58,6 +59,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
 
         if (error instanceof Error) {
           console.log('EOROROROROR', error);
+          //@ts-ignore
           (error.code === 4902) ? addMumbaiNetwork() : alert('MetaMask is not installed. Please install it to use this app: https://metamask.io/download.html');
         } else {
           console.log('Unexpected error', error);
@@ -74,11 +76,11 @@ const DomainInput: React.FC<Props> = ({ network }) => {
     return (
       <VStack>
         <Alert status='warning' flexDirection='column' width='50%' borderRadius="xl"
-          alignItems='center'  mb={12}>
+          alignItems='center' mb={12}>
           <AlertIcon />
           Please connect to Polygon Mumbai Testnet
         </Alert>
-        <Button colorScheme='teal' variant='outline' onClick={switchNetwork}>Click to switch</Button>
+        <Button colorScheme='teal' bgGradient="linear(to-r, green.100, pink.100)" variant='outline' onClick={switchNetwork}>Click to switch 🚀</Button>
       </VStack>
     );
   }
@@ -112,7 +114,8 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         const signer = provider.getSigner();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, web3Domain.abi, signer);
 
-        console.log("Going to pop wallet now to pay gas...")
+        console.log("Going to pop wallet now to pay gas...");
+        // setSuccessMsg(`Minting started, please approve gas in Metamask`)
         let tx = await contract.register(domain, { value: ethers.utils.parseEther(price) });
         // Wait for the transaction to be mined
         const receipt = await tx.wait();
@@ -120,19 +123,20 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         // Check if the transaction was successfully completed
         if (receipt.status === 1) {
           console.log("Domain minted! https://mumbai.polygonscan.com/tx/" + tx.hash);
-          setAlertMsg(`Domain minted! https://mumbai.polygonscan.com/tx/" + ${tx.hash}`)
+          setSuccessMsg(`Domain minted! https://mumbai.polygonscan.com/tx/${tx.hash}`)
 
           // Set the record for the domain
           tx = await contract.setRecord(domain, record);
           await tx.wait();
 
           console.log("Record set! https://mumbai.polygonscan.com/tx/" + tx.hash);
-
+          setRecordString(`https://mumbai.polygonscan.com/tx/${tx.hash}`)
           setRecord('');
           setDomain('');
           setAMinting(false);
           setAlertMsg('');
-          setSuccessMsg(`Record set! https://mumbai.polygonscan.com/tx/${tx.hash}`)
+          setSuccessMsg(`Record set at https://mumbai.polygonscan.com/tx/${tx.hash}`)
+          setTimeout(() => setSuccessMsg(''), 5000)
         }
         else {
           alert("Transaction failed! Please try again");
@@ -143,62 +147,84 @@ const DomainInput: React.FC<Props> = ({ network }) => {
     }
     catch (error) {
       console.log(error);
-      if (error instanceof Error) {
-        setError(error.message);
-        setAMinting(false);
-        setTimeout(() => setError(''), 5000)
-      } else {
-        console.log('Unexpected error', error);
-      }
-
+      //@ts-ignore
+      setError(error.message);
+      setAMinting(false);
+      setTimeout(() => setError(''), 5000)
+      setRecord('');
+      setDomain('');
     }
   }
 
 
 
   return (
-    <VStack color='gray.800' p={8}>
-      {alertMsg && <Alert status='warning'>
-        <AlertIcon />
-        <AlertTitle color='teal'>{`${domain}.web3`}</AlertTitle>
-        <AlertDescription > domain minting in progress </AlertDescription>
-      </Alert>}
-      {error && <Alert status='error'>
-        <AlertIcon />
-        <AlertTitle color='teal'>{error}</AlertTitle>
-      </Alert>}
-      {successMsg && <Alert status='success'>
-        <AlertIcon />
-        <AlertTitle color='teal'>{successMsg}</AlertTitle>
-      </Alert>}
-      <InputGroup size='md'>
-        <Input
-          variant='filled'
-          value={domain}
-          placeholder='Enter 3 to 8 characters  domain name'
-          onChange={e => {
-            setDomain(e.target.value)
-          }} />
-        <InputRightElement
-          pointerEvents='none'
-          color='gray.400'
-          children='.web3'
-          pr={8}
-        />
-      </InputGroup>
-      <Input
-        variant='filled'
-        value={record}
-        placeholder='what is the meaning of your domain name?'
-        onChange={e => setRecord(e.target.value)} />
-      {!aMinting ? (<Tooltip label="All field required!" shouldWrapChildren>
-        <Button colorScheme='orange' isDisabled={true && domain.length < 3 || record.length == 0} onClick={() => mintDomain()}>
-          Mint
-        </Button>
-      </Tooltip>) : (
-        <CircularProgress isIndeterminate color='orange.400' thickness='12px' size='8rem'>
-          <CircularProgressLabel color='teal'>Minting...</CircularProgressLabel>
-        </CircularProgress>)}
+    <VStack color='gray.800' p={2}>
+      {recordString &&
+        <>
+          <Text fontSize='1rem' color='tomato' m={2}>
+            Check domain record on {' '}
+            <Link color='teal.500' href={recordString} isExternal>
+              PolygonScan. Click here
+            </Link>
+          </Text>
+          <Button colorScheme='teal' variant='solid' mt={4} onClick={() => setRecordString('')}>
+            Mint another '.web3' domain
+          </Button>
+        </>}
+      {
+        alertMsg && <Alert status='warning'>
+          <AlertIcon />
+          <AlertTitle color='teal'>{`${domain}.web3`}</AlertTitle>
+          <AlertDescription > domain minting in progress </AlertDescription>
+        </Alert>
+      }
+      {
+        error && <Alert status='error'>
+          <AlertIcon />
+          <AlertTitle color='teal'>{error}</AlertTitle>
+        </Alert>
+      }
+      {
+        successMsg && <Alert status='success'>
+          <AlertIcon />
+          <AlertTitle color='teal'>{successMsg}</AlertTitle>
+        </Alert>
+      }
+      {recordString === '' &&
+        <>
+          <InputGroup size='md'>
+            <Input
+              variant='filled'
+              value={domain}
+              placeholder='Enter 3 to 8 characters domain name'
+              onChange={e => {
+                setDomain(e.target.value)
+              }} />
+            <InputRightAddon
+              pointerEvents='none'
+              color='teal.500'
+              children='.web3'
+              pr={8}
+            />
+          </InputGroup>
+          <Input
+            variant='filled'
+            value={record}
+            placeholder='what is the meaning of your domain name?'
+            onChange={e => setRecord(e.target.value)} />
+        </>
+      }
+      {
+        !aMinting ? (<Tooltip label="Mint new domain? All field required!" shouldWrapChildren>
+          <Button colorScheme='orange' isDisabled={true && domain.length < 3 || record.length == 0} onClick={() => mintDomain()}>
+            Mint
+          </Button>
+        </Tooltip>) : (
+          <CircularProgress isIndeterminate color='orange.400' thickness='12px' size='8rem'>
+            <CircularProgressLabel color='teal'>Minting...</CircularProgressLabel>
+          </CircularProgress>)
+      }
     </VStack >
   )
 };

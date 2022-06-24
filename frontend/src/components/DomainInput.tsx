@@ -7,11 +7,12 @@ import web3Domain from './utils/web3Domain.json'
 
 type Props = {
   network: string,
+  CONTRACT_ADDRESS: string,
 };
 
-const DomainInput: React.FC<Props> = ({ network }) => {
+const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
 
-  const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
+  // const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
   const [domain, setDomain] = useState<string>('');
   const [record, setRecord] = useState<string>('');
   const [recordString, setRecordString] = useState<string>('');
@@ -45,14 +46,16 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         console.log(error);
       }
     }
-
+    console.log((window as any).ethereum.networkVersion, 'window.ethereum.networkVersion');
     if (ethereum) {
       try {
+        await addMumbaiNetwork()
         // Try to switch to the Mumbai testnet
         await (window as any).ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x13881' }], // Check networks.js for hexadecimal network ids
         });
+        console.log('Wallet switched!!!!')
       } catch (error: unknown) {
         // This error code means that the chain we want has not been added to MetaMask
         // In this case we ask the user to add it to their MetaMask.

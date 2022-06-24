@@ -153,7 +153,8 @@ const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
     catch (error) {
       console.log(error);
       //@ts-ignore
-      setError(error.message);
+      (error.data)? setError(error.data.message): setError(error.message);
+      // setError(error.data.message);
       setAMinting(false);
       setTimeout(() => setError(''), 5000)
       setRecord('');

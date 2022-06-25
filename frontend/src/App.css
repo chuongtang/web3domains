@@ -2,7 +2,7 @@
   padding: 10px;
   background: rgb(173,173,165);
   background: linear-gradient(137deg, rgba(173,173,165,1) 2%, rgba(236,238,111,1) 47%, rgba(240,160,237,1) 95%);
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 .App-logo {
@@ -35,9 +35,10 @@
 }
 
 .footer {
-  position: fixed;
-  left: 0;
-  bottom: 1rem;
+  /* position: fixed; */
+  /* left: 0; */
+  /* bottom: 0.5rem; */
+  margin-top: 8rem;
   width: 100%;
   color: white;
   align-items: center;

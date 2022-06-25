@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from "ethers";
 import web3Domain from './utils/web3Domain.json';
 import {
-  useDisclosure, Center, Text, Box, SimpleGrid, Link, IconButton, Spacer, Wrap, Modal, VStack, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex
+  useDisclosure, Center, Text, Box, SimpleGrid, Link, IconButton, Spacer, Wrap, Progress, VStack, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, EditIcon } from '@chakra-ui/icons'
 
@@ -15,12 +15,12 @@ type Props = {
 const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentAccount }) => {
 
   const [mints, setMints] = useState<Array<any>>([]);
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [scrollBehavior, setScrollBehavior] = useState('inside')
+  const [loading, setLoading] = useState<boolean>(false);
 
   const btnRef = React.useRef(null)
 
   const fetchMints = async () => {
+    setLoading(true);
     try {
       const { ethereum } = window as any;
       if (ethereum) {
@@ -45,6 +45,7 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
 
         console.log("MINTS FETCHED ", mintRecords);
         setMints(mintRecords);
+        setLoading(false)
       }
     } catch (error) {
       console.log(error);
@@ -88,10 +89,12 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
   }, [currentAccount, network]);
   return (
     <>
-      <Text textAlign={[ 'left', 'center' ]}  color='teal' fontSize={{ base: '12px', md: '20px', lg: '28px' }}>Recently Minted domains</Text>
-      <Wrap spacing='30px' justify='center'>{mints?.map((mint, index) => {
+      <Text textAlign={[ 'left', 'center' ]} mt={8} mb={4}  color='teal' fontSize={{ base: '12px', md: '20px', lg: '28px' }}>Recently Minted domains</Text>
+      {loading && <Progress  colorScheme='teal'  size='lg' isIndeterminate />}
+      <Wrap spacing='20px' justify='center'>
+        {mints?.map((mint, index) => {
         return (
-          <Box key={mint.index} height='80px' borderRadius='md' border='1px' borderColor='gray.400' mb={2} p={2} >
+          <Box key={mint.id} height='80px' borderRadius='md' border='1px' borderColor='gray.400' mb={2} p={2} >
             <Flex>
               <Link key={mint.index + `link`} href={`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${mint.id}`} target="_blank" rel="noopener noreferrer" fontSize={{ base: '12px', md: '16px', lg: '20px' }} >
                 {' '}{mint.name}{'.web3'}{' '}<ExternalLinkIcon w={3} h={3} color="teal" />

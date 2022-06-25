@@ -3,6 +3,7 @@
   background: rgb(173,173,165);
   background: linear-gradient(137deg, rgba(173,173,165,1) 2%, rgba(236,238,111,1) 47%, rgba(240,160,237,1) 95%);
   /* height: 100vh; */
+  min-height: 100vh;
 }
 
 .App-logo {

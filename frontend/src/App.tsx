@@ -122,7 +122,7 @@ const App: React.FC = () => {
 
       <Flex className="footer">
         <Link color='teal.500' href='https://buildspace.so/p/build-polygon-ens'>
-          <Text as='u' fontSize={{ base: '10px', md: '18px', lg: '26px' }} color='teal'>Happily developed with buildspace</Text>
+          <Text as='u' fontSize={{ base: '10px', md: '16px', lg: '24px' }} color='teal'>Happily developed with buildspace</Text>
         </Link>
         <Image
           borderRadius='full'

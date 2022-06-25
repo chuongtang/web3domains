@@ -169,9 +169,9 @@ const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
       {recordString &&
         <>
           <Text fontSize='1rem' color='tomato' m={2}>
-            Check domain record on {' '}
+            Check domain record on PolygonScan.  {' '}
             <Link color='teal.500' href={recordString} isExternal>
-              PolygonScan. Click here
+              Click here
             </Link>
           </Text>
           <Button colorScheme='teal' variant='solid' mt={4} onClick={() => setRecordString('')}>

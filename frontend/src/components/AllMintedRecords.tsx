@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from "ethers";
 import web3Domain from './utils/web3Domain.json';
 import {
-  useDisclosure, Button, Text, Box, SimpleGrid, Link, IconButton, Spacer, Stack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex
+  useDisclosure, Center, Text, Box, SimpleGrid, Link, IconButton, Spacer, Wrap, Modal, VStack, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, EditIcon } from '@chakra-ui/icons'
 
@@ -88,52 +88,33 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
   }, [currentAccount, network]);
   return (
     <>
-      <Button mt={3} ref={btnRef} onClick={onOpen}>
-        Minted List
-      </Button>
-
-      <Modal
-        onClose={onClose}
-        finalFocusRef={btnRef}
-        isOpen={isOpen}
-        scrollBehavior={'inside'}
-
-      >
-        <ModalOverlay />
-        <ModalContent bgGradient='linear(to-r, gray.300, yellow.400, pink.200)'>
-          <ModalHeader color={'teal'}>Recently Minted Domains</ModalHeader>
-          <ModalCloseButton />
-
-          <ModalBody>
-            {mints.map((mint, index) => {
-              return (
-                <SimpleGrid minChildWidth='30px' spacing='40px' columns={{ sm: 2, md: 3, lg: 4 }}>
-                  <Box key={mint.index} height='80px'  borderRadius='md' border='1px' borderColor='gray.400' mb={2} p={2}>
-                    <Flex>
-                      <Link key={mint.index + `link`} href={`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${mint.id}`} target="_blank" rel="noopener noreferrer" fontSize={{ base: '12px', md: '16px', lg: '20px' }} >
-                        {' '}{mint.name}{'.web3'}{' '}<ExternalLinkIcon w={3} h={3} color="teal" />
-                      </Link>
-                      <Spacer />
-                      {mint.owner.toLowerCase() === currentAccount.toLowerCase() ?
-                        <IconButton
-                          colorScheme='teal'
-                          variant='unstyled'
-                          aria-label='Edit record'
-                          size='sm'
-                          icon={<EditIcon />}
-                          p={0}
-                          onClick={()=>editRecord(mint.name)}
-                        /> : null}
-                    </Flex>
-                    <Text as='i' fontSize={{ base: '12px', md: '16px', lg: '20px' }}> "{mint.record}" </Text>
-                  </Box>
-                </SimpleGrid>)
-            })}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <Text textAlign={[ 'left', 'center' ]}  color='teal' fontSize={{ base: '12px', md: '20px', lg: '28px' }}>Recently Minted domains</Text>
+      <Wrap spacing='30px' justify='center'>{mints?.map((mint, index) => {
+        return (
+          <Box key={mint.index} height='80px' borderRadius='md' border='1px' borderColor='gray.400' mb={2} p={2} >
+            <Flex>
+              <Link key={mint.index + `link`} href={`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${mint.id}`} target="_blank" rel="noopener noreferrer" fontSize={{ base: '12px', md: '16px', lg: '20px' }} >
+                {' '}{mint.name}{'.web3'}{' '}<ExternalLinkIcon w={3} h={3} color="teal" />
+              </Link>
+              <Spacer />
+              {mint.owner.toLowerCase() === currentAccount.toLowerCase() ?
+                <IconButton
+                  colorScheme='teal'
+                  variant='unstyled'
+                  aria-label='Edit record'
+                  size='sm'
+                  icon={<EditIcon />}
+                  p={0}
+                  onClick={() => editRecord(mint.name)}
+                /> : null}
+            </Flex>
+            <Text as='i' fontSize={{ base: '12px', md: '16px', lg: '20px' }}> "{mint.record}" </Text>
+          </Box>)
+      })}
+      </Wrap >
     </>
+
   )
-}
+};
 
 export default AllMintedRecords

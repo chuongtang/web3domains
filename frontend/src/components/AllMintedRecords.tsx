@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from "ethers";
 import web3Domain from './utils/web3Domain.json';
 import {
-  useDisclosure, Button, Text, Box, SimpleGrid, Link, RadioGroup, Radio, Stack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter
+  useDisclosure, Button, Text, Box, SimpleGrid, Link, IconButton, Spacer, Stack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex
 } from '@chakra-ui/react'
+import { ExternalLinkIcon, EditIcon } from '@chakra-ui/icons'
 
 type Props = {
   network: string,
@@ -76,8 +77,8 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
   }
   const editRecord = (name: string) => {
     console.log("Editing record for", name);
-    setEditing(true);
-    setDomain(name);
+    // setEditing(true);
+    // setDomain(name);
   }
   // This will run any time currentAccount or network are changed
   useEffect(() => {
@@ -107,26 +108,24 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
             {mints.map((mint, index) => {
               return (
                 <SimpleGrid minChildWidth='30px' spacing='40px' columns={{ sm: 2, md: 3, lg: 4 }}>
-                  <Box key={mint.index} height='80px' as='button' borderRadius='md' border='1px' borderColor='gray.400' mb={2}>
-                    <Link key={mint.index + `link`} href={`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${mint.id}`} target="_blank" rel="noopener noreferrer" fontSize={{ base: '12px', md: '18px', lg: '24px' }} >
-                      {' '}{mint.name}{'.web3'}{' '}
-                    </Link>
-                    {/* If mint.owner is currentAccount, add an "edit" button*/}
-                    {mint.owner.toLowerCase() === currentAccount.toLowerCase() ?
-                      <Button colorScheme='teal' variant='ghost' p={1} onClick={() => editRecord(mint.name)} alignItems='start'
-                        justifyContent='start' >
-                        <svg width="18" height="18" viewBox="0 0 21 21">
-                          <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 3)">
-                            <path d="m7 1.5h-4.5c-1.1045695 0-2 .8954305-2 2v9.0003682c0 1.1045695.8954305 2 2 2h10c1.1045695 0 2-.8954305 2-2v-4.5003682" />
-                            <path d="M14.5.46667982c.5549155.5734054.5474396 1.48588056-.0167966 2.05011677l-6.9832034 6.98320341-3 1 1-3 6.9874295-7.04563515c.5136195-.5178979 1.3296676-.55351813 1.8848509-.1045243zM12.5 2.5l.953 1" />
-                          </g>
-                        </svg>
-
-                      </Button>
-                      :
-                      null
-                    }
-                    <Text fontSize={{ base: '12px', md: '18px', lg: '22px' }}> {mint.record} </Text>
+                  <Box key={mint.index} height='80px'  borderRadius='md' border='1px' borderColor='gray.400' mb={2} p={2}>
+                    <Flex>
+                      <Link key={mint.index + `link`} href={`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${mint.id}`} target="_blank" rel="noopener noreferrer" fontSize={{ base: '12px', md: '16px', lg: '20px' }} >
+                        {' '}{mint.name}{'.web3'}{' '}<ExternalLinkIcon w={3} h={3} color="teal" />
+                      </Link>
+                      <Spacer />
+                      {mint.owner.toLowerCase() === currentAccount.toLowerCase() ?
+                        <IconButton
+                          colorScheme='teal'
+                          variant='unstyled'
+                          aria-label='Edit record'
+                          size='sm'
+                          icon={<EditIcon />}
+                          p={0}
+                          onClick={()=>editRecord(mint.name)}
+                        /> : null}
+                    </Flex>
+                    <Text as='i' fontSize={{ base: '12px', md: '16px', lg: '20px' }}> "{mint.record}" </Text>
                   </Box>
                 </SimpleGrid>)
             })}

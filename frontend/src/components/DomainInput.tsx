@@ -7,11 +7,12 @@ import web3Domain from './utils/web3Domain.json'
 
 type Props = {
   network: string,
+  CONTRACT_ADDRESS: string,
 };
 
-const DomainInput: React.FC<Props> = ({ network }) => {
+const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
 
-  const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
+  // const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
   const [domain, setDomain] = useState<string>('');
   const [record, setRecord] = useState<string>('');
   const [recordString, setRecordString] = useState<string>('');
@@ -45,20 +46,21 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         console.log(error);
       }
     }
-
+    console.log((window as any).ethereum.networkVersion, 'window.ethereum.networkVersion');
     if (ethereum) {
       try {
+        await addMumbaiNetwork()
         // Try to switch to the Mumbai testnet
         await (window as any).ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x13881' }], // Check networks.js for hexadecimal network ids
         });
+        console.log('Wallet switched!!!!')
       } catch (error: unknown) {
         // This error code means that the chain we want has not been added to MetaMask
         // In this case we ask the user to add it to their MetaMask.
 
         if (error instanceof Error) {
-          console.log('EOROROROROR', error);
           //@ts-ignore
           (error.code === 4902) ? addMumbaiNetwork() : alert('MetaMask is not installed. Please install it to use this app: https://metamask.io/download.html');
         } else {
@@ -103,7 +105,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
 
     console.log("Minting domain", domain, "with price", price);
     setAMinting(true);
-    setAlertMsg(`Minting your ${domain}.web3 domain ...`);
+    setAlertMsg(`.web3 domain is being minted on the blockchain`);
     setTimeout(() =>
       setAlertMsg(''), 3000);
     try {
@@ -115,7 +117,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         const contract = new ethers.Contract(CONTRACT_ADDRESS, web3Domain.abi, signer);
 
         console.log("Going to pop wallet now to pay gas...");
-        // setSuccessMsg(`Minting started, please approve gas in Metamask`)
+        setAlertMsg(`Minting started, please approve gas in Metamask`)
         let tx = await contract.register(domain, { value: ethers.utils.parseEther(price) });
         // Wait for the transaction to be mined
         const receipt = await tx.wait();
@@ -123,18 +125,21 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         // Check if the transaction was successfully completed
         if (receipt.status === 1) {
           console.log("Domain minted! https://mumbai.polygonscan.com/tx/" + tx.hash);
+          setAlertMsg('');
           setSuccessMsg(`Domain minted! https://mumbai.polygonscan.com/tx/${tx.hash}`)
 
+          setAlertMsg('Setting domain record on Polygon network');
           // Set the record for the domain
           tx = await contract.setRecord(domain, record);
+          setSuccessMsg('');
           await tx.wait();
 
           console.log("Record set! https://mumbai.polygonscan.com/tx/" + tx.hash);
-          setRecordString(`https://mumbai.polygonscan.com/tx/${tx.hash}`)
+          setRecordString(`https://mumbai.polygonscan.com/tx/${tx.hash}`);
+          setAlertMsg('');
           setRecord('');
           setDomain('');
           setAMinting(false);
-          setAlertMsg('');
           setSuccessMsg(`Record set at https://mumbai.polygonscan.com/tx/${tx.hash}`)
           setTimeout(() => setSuccessMsg(''), 5000)
         }
@@ -148,7 +153,8 @@ const DomainInput: React.FC<Props> = ({ network }) => {
     catch (error) {
       console.log(error);
       //@ts-ignore
-      setError(error.message);
+      (error.data)? setError(error.data.message): setError(error.message);
+      // setError(error.data.message);
       setAMinting(false);
       setTimeout(() => setError(''), 5000)
       setRecord('');
@@ -176,7 +182,7 @@ const DomainInput: React.FC<Props> = ({ network }) => {
         alertMsg && <Alert status='warning'>
           <AlertIcon />
           <AlertTitle color='teal'>{`${domain}.web3`}</AlertTitle>
-          <AlertDescription > domain minting in progress </AlertDescription>
+          <AlertDescription > {alertMsg} </AlertDescription>
         </Alert>
       }
       {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect,  } from 'react';
 import { ethers } from "ethers";
 import web3Domain from './utils/web3Domain.json';
 import {
-  useDisclosure, Center, Text, Box, SimpleGrid, Link, IconButton, Spacer, Wrap, Progress, VStack, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex
+   Text, Box, Link, IconButton, Spacer, Wrap, Progress, Flex
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, EditIcon } from '@chakra-ui/icons'
 
@@ -18,7 +18,6 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
   const [mints, setMints] = useState<Array<any>>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const btnRef = React.useRef(null)
 
   const fetchMints = async () => {
     setLoading(true);
@@ -101,7 +100,7 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
                 {' '}{mint.name}{'.web3'}{' '}<ExternalLinkIcon w={3} h={3} color="teal" />
               </Link>
               <Spacer />
-              {mint.owner.toLowerCase() === currentAccount.toLowerCase() ?
+              {/* {mint.owner.toLowerCase() === currentAccount.toLowerCase() ?
                 <IconButton
                   colorScheme='teal'
                   variant='unstyled'
@@ -110,7 +109,7 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
                   icon={<EditIcon />}
                   p={0}
                   onClick={() => editRecord(mint.name)}
-                /> : null}
+                /> : null} */}
             </Flex>
             <Text as='i' fontSize={{ base: '12px', md: '16px', lg: '20px' }}> "{mint.record}" </Text>
           </Box>)

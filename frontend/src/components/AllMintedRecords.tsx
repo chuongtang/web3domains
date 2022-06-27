@@ -9,10 +9,11 @@ import { ExternalLinkIcon, EditIcon } from '@chakra-ui/icons'
 type Props = {
   network: string,
   CONTRACT_ADDRESS: string,
-  currentAccount: string
+  currentAccount: string,
+  isNewMint: boolean,
 };
 
-const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentAccount }) => {
+const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentAccount, isNewMint }) => {
 
   const [mints, setMints] = useState<Array<any>>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -52,30 +53,30 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
     }
   }
 
-  const updateDomain = async () => {
-    if (!record || !domain) { return }
-    setLoading(true);
-    console.log("Updating domain", domain, "with record", record);
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
+  // const updateDomain = async () => {
+  //   if (!record || !domain) { return }
+  //   setLoading(true);
+  //   console.log("Updating domain", domain, "with record", record);
+  //   try {
+  //     const { ethereum } = window as any;
+  //     if (ethereum) {
+  //       const provider = new ethers.providers.Web3Provider(ethereum);
+  //       const signer = provider.getSigner();
+  //       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
 
-        let tx = await contract.setRecord(domain, record);
-        await tx.wait();
-        console.log("Record set https://mumbai.polygonscan.com/tx/" + tx.hash);
+  //       let tx = await contract.setRecord(domain, record);
+  //       await tx.wait();
+  //       console.log("Record set https://mumbai.polygonscan.com/tx/" + tx.hash);
 
-        fetchMints();
-        setRecord('');
-        setDomain('');
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setLoading(false);
-  }
+  //       fetchMints();
+  //       // setRecord('');
+  //       // setDomain('');
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   setLoading(false);
+  // }
   const editRecord = (name: string) => {
     console.log("Editing record for", name);
     // setEditing(true);
@@ -86,7 +87,7 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
     if (network === 'Polygon Mumbai Testnet') {
       fetchMints();
     }
-  }, [currentAccount, network]);
+  }, [currentAccount, network, isNewMint]);
   return (
     <>
       <Text textAlign={[ 'left', 'center' ]} mt={8} mb={4}  color='teal' fontSize={{ base: '12px', md: '20px', lg: '28px' }}>Recently Minted domains</Text>

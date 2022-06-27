@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, Dispatch } from 'react'
 import {
   VStack, Button, Input, InputGroup, InputRightAddon, Center, Tooltip, Link, CircularProgress, CircularProgressLabel, Alert, AlertIcon, AlertTitle, AlertDescription, Text
 } from '@chakra-ui/react'
@@ -8,9 +8,10 @@ import web3Domain from './utils/web3Domain.json'
 type Props = {
   network: string,
   CONTRACT_ADDRESS: string,
+  setIsNewMint: Dispatch<React.SetStateAction<boolean>>,
 };
 
-const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
+const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS, setIsNewMint }) => {
 
   // const CONTRACT_ADDRESS: string | null = '0xd4E97d0E516E543B711c372b4bFEc8dF45066795';
   const [domain, setDomain] = useState<string>('');
@@ -141,7 +142,8 @@ const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
           setDomain('');
           setAMinting(false);
           setSuccessMsg(`Record set at https://mumbai.polygonscan.com/tx/${tx.hash}`)
-          setTimeout(() => setSuccessMsg(''), 5000)
+          setTimeout(() => setSuccessMsg(''), 5000);
+          setIsNewMint(true)
         }
         else {
           alert("Transaction failed! Please try again");
@@ -160,6 +162,7 @@ const DomainInput: React.FC<Props> = ({ network, CONTRACT_ADDRESS }) => {
       setRecord('');
       setDomain('');
     }
+    setIsNewMint(true)
   }
 
 

@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
   const [network, setNetwork] = useState<string>('mangGi');
+  const [isNewMint, setIsNewMint] = useState<boolean>(false);
 
   useEffect(() => {
     // //check if Metamask wallet is installed
@@ -117,8 +118,8 @@ const App: React.FC = () => {
             </Link>
           </Text>}
       </VStack>
-      {currentAccount && <DomainInput network={network} CONTRACT_ADDRESS={CONTRACT_ADDRESS} />}
-      {currentAccount && <AllMintedRecords network={network} CONTRACT_ADDRESS={CONTRACT_ADDRESS} currentAccount={currentAccount} />}
+      {currentAccount && <DomainInput network={network} CONTRACT_ADDRESS={CONTRACT_ADDRESS} setIsNewMint={setIsNewMint} />}
+      {currentAccount && <AllMintedRecords network={network} CONTRACT_ADDRESS={CONTRACT_ADDRESS} currentAccount={currentAccount} isNewMint={isNewMint} />}
 
       <Flex className="footer">
         <Link color='teal.500' href='https://buildspace.so/p/build-polygon-ens'>

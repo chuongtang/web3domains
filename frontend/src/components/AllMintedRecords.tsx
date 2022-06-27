@@ -43,7 +43,7 @@ const AllMintedRecords: React.FC<Props> = ({ network, CONTRACT_ADDRESS, currentA
             owner: owner,
           };
         }));
-
+        mintRecords.reverse();
         console.log("MINTS FETCHED ", mintRecords);
         setMints(mintRecords);
         setLoading(false)
